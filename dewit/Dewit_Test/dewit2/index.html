@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>dewit – Notizen</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    .note-form, .note {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    textarea, input, select {
+      width: 100%;
+      padding: 8px;
+      margin: 6px 0;
+    }
+    button {
+      padding: 6px 10px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+    .important { border-left: 6px solid #e74c3c; }
+    .medium { border-left: 6px solid #f1c40f; }
+    .low { border-left: 6px solid #2ecc71; }
+    .meta {
+      font-size: 0.9em;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>dewit</h1>
+
+    <div class="note-form">
+      <h3>Neue Notiz</h3>
+      <textarea id="text" placeholder="Notiz schreiben..."></textarea>
+      <input type="date" id="date" />
+      <select id="priority">
+        <option value="important">Wichtig</option>
+        <option value="medium">Mittel</option>
+        <option value="low">Egal</option>
+      </select>
+      <button onclick="addNote()">Speichern</button>
+    </div>
+
+    <div id="notes"></div>
+  </div>
+
+  <script>
+    let notes = JSON.parse(localStorage.getItem('dewitNotes')) || [];
+
+    function saveNotes() {
+      localStorage.setItem('dewitNotes', JSON.stringify(notes));
+    }
+
+    function daysLeft(date) {
+      const today = new Date();
+      const target = new Date(date);
+      const diff = target - today;
+      return Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+
+    function addNote() {
+      const text = document.getElementById('text').value;
+      const date = document.getElementById('date').value;
+      const priority = document.getElementById('priority').value;
+      if (!text || !date) return alert('Bitte Text und Datum eingeben');
+
+      notes.push({ text, date, priority });
+      saveNotes();
+      renderNotes();
+
+      document.getElementById('text').value = '';
+    }
+
+    function deleteNote(index) {
+      notes.splice(index, 1);
+      saveNotes();
+      renderNotes();
+    }
+
+    function editNote(index) {
+      const newText = prompt('Notiz bearbeiten:', notes[index].text);
+      if (newText !== null) {
+        notes[index].text = newText;
+        saveNotes();
+        renderNotes();
+      }
+    }
+
+    function renderNotes() {
+      const container = document.getElementById('notes');
+      container.innerHTML = '';
+
+      notes.forEach((note, i) => {
+        const div = document.createElement('div');
+        div.className = `note ${note.priority}`;
+
+        const days = daysLeft(note.date);
+        div.innerHTML = `
+          <p>${note.text}</p>
+          <div class="meta">
+            Ablaufdatum: ${note.date} – ${days >= 0 ? days + ' Tage übrig' : 'Abgelaufen'}
+          </div>
+          <button onclick="editNote(${i})">Bearbeiten</button>
+          <button onclick="deleteNote(${i})">Löschen</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    renderNotes();
+  </script>
+</body>
+</html>
