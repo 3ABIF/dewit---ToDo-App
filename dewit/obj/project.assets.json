@@ -8,19 +8,19 @@
     "net9.0": []
   },
   "packageFolders": {
-    "C:\\Users\\stein\\.nuget\\packages\\": {}
+    "C:\\Users\\JohannesPernsteiner\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\stein\\Desktop\\Dewit (Projekt)\\Dewit_18.12.2025\\dewit\\dewit.csproj",
+      "projectUniqueName": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\dewit---ToDo-App\\dewit\\dewit.csproj",
       "projectName": "dewit",
-      "projectPath": "C:\\Users\\stein\\Desktop\\Dewit (Projekt)\\Dewit_18.12.2025\\dewit\\dewit.csproj",
-      "packagesPath": "C:\\Users\\stein\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\stein\\Desktop\\Dewit (Projekt)\\Dewit_18.12.2025\\dewit\\obj\\",
+      "projectPath": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\dewit---ToDo-App\\dewit\\dewit.csproj",
+      "packagesPath": "C:\\Users\\JohannesPernsteiner\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\dewit---ToDo-App\\dewit\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\stein\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\JohannesPernsteiner\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -65,7 +65,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.309/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
