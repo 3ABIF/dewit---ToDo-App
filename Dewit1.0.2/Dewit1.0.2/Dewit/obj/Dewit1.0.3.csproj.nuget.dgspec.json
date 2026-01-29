@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\Dewit1.0.3.csproj": {}
+    "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\dewit---ToDo-App\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\Dewit1.0.3.csproj": {}
   },
   "projects": {
-    "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\Dewit1.0.3.csproj": {
+    "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\dewit---ToDo-App\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\Dewit1.0.3.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\Dewit1.0.3.csproj",
+        "projectUniqueName": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\dewit---ToDo-App\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\Dewit1.0.3.csproj",
         "projectName": "Dewit1.0.3",
-        "projectPath": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\Dewit1.0.3.csproj",
+        "projectPath": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\dewit---ToDo-App\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\Dewit1.0.3.csproj",
         "packagesPath": "C:\\Users\\JohannesPernsteiner\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\obj\\",
+        "outputPath": "C:\\Users\\JohannesPernsteiner\\Documents\\HTL\\HTL\\SYP\\dewit! - Dev\\dewit---ToDo-App\\Dewit1.0.2\\Dewit1.0.2\\Dewit1.0.3\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\JohannesPernsteiner\\AppData\\Roaming\\NuGet\\NuGet.Config"

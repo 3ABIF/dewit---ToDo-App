@@ -1,116 +1,42 @@
-:root {
-  --bg: #f6f7fb;
-  --card: #ffffff;
-  --text: #1f2933;
-  --muted: #6b7280;
-  --primary: #6366f1;
-
-  --important: #ef4444;
-  --medium: #f59e0b;
-  --low: #10b981;
-}
-
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  margin: 0;
-  padding: 24px;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 8px;
-}
-
-/* Cards */
-.note, .note-form, .calendar {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-}
-
-/* Inputs */
-input, textarea, select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-}
-
-/* Buttons */
-button {
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 8px 14px;
-  cursor: pointer;
-}
-
-button.secondary {
-  background: #e5e7eb;
-  color: #111;
-}
-
-/* Notes */
-.important { border-left: 5px solid var(--important); }
-.medium { border-left: 5px solid var(--medium); }
-.low { border-left: 5px solid var(--low); }
-
-.done {
-  text-decoration: line-through;
-  opacity: 0.6;
-}
-
-.meta {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-/* Filter */
-.filter-bar {
-  display: flex;
-  gap: 10px;
-}
-
-/* Calendar */
+/* Calendar Grid */
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 
 .day {
-  background: #f3f4f6;
-  padding: 10px;
-  border-radius: 12px;
-  text-align: center;
-  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  background-color: var(--bs-tertiary-bg); /* Adapts to dark mode automatically */
+  color: var(--bs-body-color);
 }
 
+/* Dots in Calendar */
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  margin: 4px auto 0;
+  margin-top: 4px;
 }
 
-.important-dot { background: var(--important); }
-.medium-dot { background: var(--medium); }
-.low-dot { background: var(--low); }
+/* Priority Colors matching Bootstrap palette or custom */
+.bg-important-dot { background-color: #dc3545; } /* Bootstrap Danger */
+.bg-medium-dot    { background-color: #ffc107; } /* Bootstrap Warning */
+.bg-low-dot       { background-color: #198754; } /* Bootstrap Success */
 
-/* Dark Mode */
-body.dark {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --text: #e5e7eb;
-  --muted: #9ca3af;
+/* Priority Borders for Cards */
+.border-important { border-left: 5px solid #dc3545 !important; }
+.border-medium    { border-left: 5px solid #ffc107 !important; }
+.border-low       { border-left: 5px solid #198754 !important; }
+
+/* Completed State */
+.done-text {
+  text-decoration: line-through;
+  opacity: 0.5;
 }

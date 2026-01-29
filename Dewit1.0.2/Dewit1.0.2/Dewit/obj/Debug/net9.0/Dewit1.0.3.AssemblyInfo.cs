@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Dewit1.0.3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d2282e517a12ccd93fe4b442cea4c24c79f7a56e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Dewit1.0.3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Dewit1.0.3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
