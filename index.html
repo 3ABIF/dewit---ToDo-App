@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <title>DEWIT – Notizen</title>
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+ 
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>DEWIT</h1>
+    <button class="secondary" onclick="toggleDark()">🌙</button>
+
+   
+    <div class="note-form">
+      <h3>Neue Notiz</h3>
+      <textarea id="text" placeholder="Notiz schreiben..."></textarea>
+      <input type="date" id="date" />
+      <select id="priority">
+        <option value="important">Wichtig</option>
+        <option value="medium">Mittel</option>
+        <option value="low">Egal</option>
+      </select>
+      <button onclick="addNote()">Speichern</button>
+    </div>
+
+  
+    <div class="note-form filter-bar">
+      <input type="text" id="search" placeholder="🔍 Notizen durchsuchen..." oninput="renderNotes()">
+      <select id="filter" onchange="renderNotes()">
+        <option value="all">Alle</option>
+        <option value="open">Offen</option>
+        <option value="done">Erledigt</option>
+        <option value="important">Wichtig</option>
+        <option value="medium">Mittel</option>
+        <option value="low">Egal</option>
+      </select>
+    </div>
+
+    
+    <div class="calendar">
+      <h3 id="monthYear"></h3>
+      <div class="calendar-grid" id="calendar"></div>
+    </div>
+
+   
+    <div id="notes"></div>
+  </div>
+
+
+  <script src="script.js"></script>
+</body>
+</html>
