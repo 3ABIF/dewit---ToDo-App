@@ -114,3 +114,114 @@ body.dark {
   --text: #e5e7eb;
   --muted: #9ca3af;
 }
+
+/* "Mein Tag" Section */
+.my-day-section {
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.15);
+  color: white;
+}
+
+.my-day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.my-day-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.day-counter {
+  font-size: 14px;
+  opacity: 0.9;
+  font-weight: 600;
+}
+
+/* Container für die Notizen von "Mein Tag" */
+.my-day-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Stilisierung der Notiz-Cards in "Mein Tag" Bereich */
+.my-day-container .note {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text);
+  padding: 14px;
+  margin-bottom: 0;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.my-day-container .note:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(99, 102, 241, 0.15);
+}
+
+/* Button speziell im "Mein Tag" Bereich: "Aus meinem Tag entfernen" */
+.my-day-btn {
+  background: #ef4444 !important;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  margin-left: 8px;
+}
+
+.my-day-btn:hover {
+  background: #dc2626 !important;
+}
+
+/* Leerzustand */
+.my-day-empty {
+  text-align: center;
+  padding: 20px;
+  opacity: 0.9;
+  display: none;
+}
+
+.my-day-empty p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Button für "Zu Mein Tag" in normaler Notiz-Liste */
+.my-day-toggle {
+  background: #6366f1 !important;
+  margin-left: 8px;
+}
+
+.my-day-toggle:hover {
+  background: #4f46e5 !important;
+}
+
+/* Dark Mode für "Mein Tag" */
+body.dark .my-day-section {
+  background: linear-gradient(135deg, #4f46e5, #6d28d9);
+  box-shadow: 0 15px 35px rgba(99, 102, 241, 0.2);
+}
+
+body.dark .my-day-container .note {
+  background: rgba(30, 41, 59, 0.95);
+  color: var(--text);
+}
+
+body.dark .my-day-empty {
+  color: #cbd5e1;
+}

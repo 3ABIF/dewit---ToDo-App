@@ -4,6 +4,14 @@ function saveNotes() {
   localStorage.setItem('dewitNotes', JSON.stringify(notes));
 }
 
+function getToday() {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 function daysLeft(date) {
   const today = new Date();
   today.setHours(0,0,0,0);
@@ -17,9 +25,10 @@ function addNote() {
 
   if (!text || !date) return alert('Bitte Text und Datum eingeben');
 
-  notes.push({ text, date, priority, done: false });
+  notes.push({ text, date, priority, done: false, inMyDay: false });
   saveNotes();
   renderNotes();
+  renderMyDay();
   renderCalendar();
 
   textEl.value = '';
@@ -31,6 +40,7 @@ function deleteNote(i) {
   notes.splice(i, 1);
   saveNotes();
   renderNotes();
+  renderMyDay();
   renderCalendar();
 }
 
@@ -40,6 +50,7 @@ function editNote(i) {
     notes[i].text = t;
     saveNotes();
     renderNotes();
+    renderMyDay();
   }
 }
 
@@ -47,6 +58,62 @@ function toggleDone(i) {
   notes[i].done = !notes[i].done;
   saveNotes();
   renderNotes();
+  renderMyDay();
+}
+
+function toggleMyDay(i) {
+  notes[i].inMyDay = !notes[i].inMyDay;
+  saveNotes();
+  renderMyDay();
+  renderNotes();
+}
+
+function renderMyDay() {
+  const myDayContainer = document.getElementById('myDayContainer');
+  const myDayEmpty = document.getElementById('myDayEmpty');
+  const myDayCount = document.getElementById('myDayCount');
+
+  myDayContainer.innerHTML = '';
+
+  const today = getToday();
+
+  const myDayNotes = notes.filter(n =>
+    n.date === today && n.inMyDay === true
+  );
+
+  const count = myDayNotes.length;
+  myDayCount.textContent = count === 1
+    ? '1 Notiz'
+    : `${count} Notizen`;
+
+  if (myDayNotes.length === 0) {
+    myDayEmpty.style.display = 'block';
+    myDayContainer.style.display = 'none';
+    return;
+  }
+
+  myDayEmpty.style.display = 'none';
+  myDayContainer.style.display = 'flex';
+
+  myDayNotes.forEach(myDayNote => {
+    const originalIndex = notes.findIndex(n => n === myDayNote);
+
+    const div = document.createElement('div');
+    div.className = `note ${myDayNote.priority}`;
+
+    const days = daysLeft(myDayNote.date);
+
+    div.innerHTML = `
+      <div style="flex: 1;">
+        <p class="${myDayNote.done ? 'done' : ''}">${myDayNote.text}</p>
+        <div class="meta">📅 Heute · ${days >= 0 ? days + ' Tage übrig' : 'Abgelaufen'}</div>
+      </div>
+      <button onclick="toggleDone(${originalIndex})">✔️</button>
+      <button class="secondary" onclick="editNote(${originalIndex})">✏️</button>
+      <button class="my-day-btn" onclick="toggleMyDay(${originalIndex})">✕ Entfernen</button>
+    `;
+    myDayContainer.appendChild(div);
+  });
 }
 
 function renderNotes() {
@@ -63,18 +130,22 @@ function renderNotes() {
   if (['important','medium','low'].includes(filter))
     list = list.filter(n => n.priority === filter);
 
-  list.forEach((note, i) => {
+  list.forEach((note) => {
+    const originalIndex = notes.findIndex(n => n === note);
     const div = document.createElement('div');
     div.className = `note ${note.priority}`;
 
     const days = daysLeft(note.date);
+    const today = getToday();
+    const isToday = note.date === today;
 
     div.innerHTML = `
       <p class="${note.done ? 'done' : ''}">${note.text}</p>
       <div class="meta">📅 ${note.date} · ${days >= 0 ? days + ' Tage übrig' : 'Abgelaufen'}</div>
-      <button onclick="toggleDone(${i})">✔️</button>
-      <button class="secondary" onclick="editNote(${i})">✏️</button>
-      <button class="secondary" onclick="deleteNote(${i})">🗑️</button>
+      <button onclick="toggleDone(${originalIndex})">✔️</button>
+      <button class="secondary" onclick="editNote(${originalIndex})">✏️</button>
+      <button class="secondary" onclick="deleteNote(${originalIndex})">🗑️</button>
+      ${isToday ? `<button class="secondary my-day-toggle" onclick="toggleMyDay(${originalIndex})">⭐ ${note.inMyDay ? 'Entfernt' : 'Zu Mein Tag'}</button>` : ''}
     `;
     container.appendChild(div);
   });
@@ -129,5 +200,12 @@ const filterEl = document.getElementById('filter');
 if (localStorage.getItem('darkMode') === 'true')
   document.body.classList.add('dark');
 
+// Migration: Add inMyDay field to existing notes
+notes = notes.map(note => ({
+  ...note,
+  inMyDay: note.inMyDay || false
+}));
+
+renderMyDay();
 renderNotes();
 renderCalendar();

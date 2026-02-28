@@ -18,7 +18,19 @@
     <h1>DEWIT</h1>
     <button class="secondary" onclick="toggleDark()">🌙</button>
 
-   
+    <div id="myDaySection" class="my-day-section">
+      <div class="my-day-header">
+        <h2>Mein Tag</h2>
+        <span id="myDayCount" class="day-counter">0 Notizen</span>
+      </div>
+      <div id="myDayContainer" class="my-day-container">
+      </div>
+      <div id="myDayEmpty" class="my-day-empty">
+        <p>Keine Notizen für heute. Zeit, deinen Tag zu starten!</p>
+      </div>
+    </div>
+
+
     <div class="note-form">
       <h3>Neue Notiz</h3>
       <textarea id="text" placeholder="Notiz schreiben..."></textarea>
