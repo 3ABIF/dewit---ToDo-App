@@ -115,6 +115,10 @@ body.dark {
   --muted: #9ca3af;
 }
 
+body.dark .day {
+  color: #1f2933;
+}
+
 /* "Mein Tag" Section */
 .my-day-section {
   background: linear-gradient(135deg, #6366f1, #7c3aed);
