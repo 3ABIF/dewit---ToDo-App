@@ -185,5 +185,25 @@ docker-compose up
 - 🌙 Dark Mode
 - 📱 Responsive Design
 
+### Kalender-Picker
+
+Die Anwendung enthält zwei Kalender-Komponenten für die Datumsverwaltung:
+
+1. **Datumseingabe für neue Notizen**:
+   - Verwendet das native HTML5 `<input type="date">`-Element
+   - Ermöglicht die Auswahl eines Datums beim Erstellen einer neuen Notiz
+   - Das ausgewählte Datum wird im ISO-Format (YYYY-MM-DD) gespeichert
+   - Technisch: Browser-native Datums-Picker, keine externe Bibliothek erforderlich
+
+2. **Kalender-Übersicht am unteren Rand**:
+   - Zeigt eine Monatsansicht mit allen Tagen des aktuellen Monats
+   - Tage mit Notizen werden mit farbigen Punkten markiert (rot für wichtig, orange für mittel, grün für egal)
+   - Implementiert in `script.js` mit der Funktion `renderCalendar()`
+   - Grid-Layout mit 7 Spalten für die Wochentage
+   - Responsive Design: Anpassung an verschiedene Bildschirmgrößen
+   - Dark Mode: Die Tagesfelder bleiben hell, nur die Zahlen werden dunkel für bessere Lesbarkeit
+
+Die Kalender-Funktionalität basiert vollständig auf Vanilla JavaScript und CSS, ohne externe Plugins oder Bibliotheken.
+
 Dieses Dokument soll es ermöglichen, den Code des dewit-Projekts vollständig zu verstehen und weiterzuentwickeln.</content>
 <parameter name="filePath">c:\Users\JohannesPernsteiner\Documents\GitHub\dewit---ToDo-App\Project_Definition_Document.md
