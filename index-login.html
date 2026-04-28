@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DEWIT – Login</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #1f2933;
+      --muted: #6b7280;
+      --primary: #6366f1;
+      --important: #ef4444;
+      --medium: #f59e0b;
+      --low: #10b981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, var(--primary), #7c3aed);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--text);
+    }
+
+    body.dark {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+    }
+
+    .login-container {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-container h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      font-size: 32px;
+      color: var(--primary);
+    }
+
+    .login-container p {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+      background: var(--card);
+      color: var(--text);
+    }
+
+    body.dark .form-group input {
+      background: #1e293b;
+      border-color: #334155;
+      color: #e5e7eb;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-group button {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .form-group button:hover {
+      background: #4f46e5;
+    }
+
+    .form-group button:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    .toggle-form {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .toggle-form button {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+      padding: 0;
+      font: inherit;
+    }
+
+    .toggle-form button:hover {
+      color: #4f46e5;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    body.dark .error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #fca5a5;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+
+    body.dark .success {
+      background: rgba(16, 185, 129, 0.1);
+      color: #86efac;
+    }
+
+    .dark-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--card);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      font-size: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <button class="dark-toggle" onclick="toggleDark()">🌙</button>
+
+  <div class="login-container">
+    <h1>DEWIT</h1>
+    <p>Deine persönliche Todo App</p>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <div class="error" id="loginError"></div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="deine@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Passwort</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <button onclick="login()" id="loginBtn">Anmelden</button>
+      </div>
+      <div class="toggle-form">
+        Noch kein Konto? <button onclick="toggleForm()">Jetzt registrieren</button>
+      </div>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" class="hidden">
+      <div class="error" id="registerError"></div>
+      <div class="success" id="registerSuccess"></div>
+      <div class="form-group">
+        <label>Benutzername</label>
+        <input type="text" id="registerUsername" placeholder="dein_benutzername" />
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="registerEmail" placeholder="deine@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Passwort</label>
+        <input type="password" id="registerPassword" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <label>Passwort wiederholen</label>
+        <input type="password" id="registerPasswordConfirm" placeholder="••••••••" />
+      </div>
+      <div class="form-group">
+        <button onclick="register()" id="registerBtn">Registrieren</button>
+      </div>
+      <div class="toggle-form">
+        Bereits ein Konto? <button onclick="toggleForm()">Hier anmelden</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const AUTH_URL = 'http://localhost:3001/auth';
+
+    function toggleForm() {
+      const loginForm = document.getElementById('loginForm');
+      const registerForm = document.getElementById('registerForm');
+      loginForm.classList.toggle('hidden');
+      registerForm.classList.toggle('hidden');
+      clearErrors();
+    }
+
+    function showError(formType, message) {
+      const errorEl = document.getElementById(`${formType}Error`);
+      errorEl.textContent = message;
+      errorEl.style.display = 'block';
+    }
+
+    function showSuccess(message) {
+      const successEl = document.getElementById('registerSuccess');
+      successEl.textContent = message;
+      successEl.style.display = 'block';
+    }
+
+    function clearErrors() {
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('registerError').style.display = 'none';
+      document.getElementById('registerSuccess').style.display = 'none';
+    }
+
+    async function login() {
+      clearErrors();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+
+      if (!email || !password) {
+        showError('login', 'Bitte alle Felder ausfüllen');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Wird angemeldet...';
+
+      try {
+        const response = await fetch(`${AUTH_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showError('login', data.error || 'Anmeldung fehlgeschlagen');
+          btn.disabled = false;
+          btn.textContent = 'Anmelden';
+          return;
+        }
+
+        // Store token and user info
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // Redirect to main app
+        window.location.href = 'index.html';
+      } catch (err) {
+        console.error('Login error:', err);
+        showError('login', 'Verbindungsfehler. Überprüfe, ob der Server läuft.');
+        btn.disabled = false;
+        btn.textContent = 'Anmelden';
+      }
+    }
+
+    async function register() {
+      clearErrors();
+      const username = document.getElementById('registerUsername').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value;
+      const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+      const btn = document.getElementById('registerBtn');
+
+      if (!username || !email || !password || !passwordConfirm) {
+        showError('register', 'Bitte alle Felder ausfüllen');
+        return;
+      }
+
+      if (password !== passwordConfirm) {
+        showError('register', 'Passwörter stimmen nicht überein');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('register', 'Passwort muss mindestens 6 Zeichen lang sein');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Wird registriert...';
+
+      try {
+        const response = await fetch(`${AUTH_URL}/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showError('register', data.error || 'Registrierung fehlgeschlagen');
+          btn.disabled = false;
+          btn.textContent = 'Registrieren';
+          return;
+        }
+
+        showSuccess('Registrierung erfolgreich! Du wirst weitergeleitet...');
+        document.getElementById('registerUsername').value = '';
+        document.getElementById('registerEmail').value = '';
+        document.getElementById('registerPassword').value = '';
+        document.getElementById('registerPasswordConfirm').value = '';
+
+        // Auto-login after successful registration
+        setTimeout(() => {
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          window.location.href = 'index.html';
+        }, 1500);
+      } catch (err) {
+        console.error('Register error:', err);
+        showError('register', 'Verbindungsfehler. Überprüfe, ob der Server läuft.');
+        btn.disabled = false;
+        btn.textContent = 'Registrieren';
+      }
+    }
+
+    function toggleDark() {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+    }
+
+    // Load dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark');
+    }
+
+    // Check if already logged in
+    const token = localStorage.getItem('token');
+    if (token) {
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+</html>

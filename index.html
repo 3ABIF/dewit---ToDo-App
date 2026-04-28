@@ -2,21 +2,26 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DEWIT – Notizen</title>
-
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
- 
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
   <div class="container">
-    <h1>DEWIT</h1>
-    <button class="secondary" onclick="toggleDark()">🌙</button>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h1>DEWIT</h1>
+      <div style="display: flex; gap: 10px; align-items: center;">
+        <span id="userDisplay" style="font-weight: 600; color: var(--muted); font-size: 14px;"></span>
+        <button class="secondary" onclick="toggleDark()">🌙</button>
+        <button class="secondary" onclick="logout()">Logout</button>
+      </div>
+    </div>
 
     <div id="myDaySection" class="my-day-section">
       <div class="my-day-header">
@@ -30,7 +35,6 @@
       </div>
     </div>
 
-
     <div class="note-form">
       <h3>Neue Notiz</h3>
       <textarea id="text" placeholder="Notiz schreiben..."></textarea>
@@ -43,7 +47,6 @@
       <button onclick="addNote()">Speichern</button>
     </div>
 
-  
     <div class="note-form filter-bar">
       <input type="text" id="search" placeholder="🔍 Notizen durchsuchen..." oninput="renderNotes()">
       <select id="filter" onchange="renderNotes()">
@@ -56,17 +59,14 @@
       </select>
     </div>
 
-    
     <div class="calendar">
       <h3 id="monthYear"></h3>
       <div class="calendar-grid" id="calendar"></div>
     </div>
 
-   
     <div id="notes"></div>
   </div>
 
-
-  <script src="script.js"></script>
+  <script src="script-api.js"></script>
 </body>
 </html>
