@@ -1,11 +1,47 @@
 const API_URL = 'http://localhost:3001/api';
+const AUTH_URL = 'http://localhost:3001/auth';
 
 let notes = [];
+let currentUser = null;
+
+// Check if user is logged in on page load
+function checkAuth() {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+
+  if (!token || !user) {
+    // Redirect to login
+    window.location.href = 'index-login.html';
+    return;
+  }
+
+  currentUser = JSON.parse(user);
+  
+  // Display username
+  const userDisplay = document.getElementById('userDisplay');
+  if (userDisplay) {
+    userDisplay.textContent = `👤 ${currentUser.username}`;
+  }
+
+  fetchNotes();
+}
 
 async function fetchNotes() {
   try {
-    const response = await fetch(`${API_URL}/notes`);
-    if (!response.ok) throw new Error('Failed to fetch notes');
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/notes`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Token expired or invalid
+        logout();
+        return;
+      }
+      throw new Error('Failed to fetch notes');
+    }
+
     notes = await response.json();
     renderNotes();
     renderMyDay();
@@ -24,13 +60,24 @@ async function addNote() {
   if (!text || !date) return alert('Bitte Text und Datum eingeben');
 
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/notes`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ text, date, priority })
     });
-    if (!response.ok) throw new Error('Failed to create note');
-    
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+      throw new Error('Failed to create note');
+    }
+
     await fetchNotes();
     textEl.value = '';
     dateEl.value = '';
@@ -42,13 +89,22 @@ async function addNote() {
 
 async function deleteNote(i) {
   if (!confirm('Notiz löschen?')) return;
-  
+
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/notes/${notes[i].id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
     });
-    if (!response.ok) throw new Error('Failed to delete note');
-    
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+      throw new Error('Failed to delete note');
+    }
+
     await fetchNotes();
   } catch (err) {
     console.error('Error deleting note:', err);
@@ -60,13 +116,24 @@ async function editNote(i) {
   const t = prompt('Notiz bearbeiten', notes[i].text);
   if (t !== null) {
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/notes/${notes[i].id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ text: t })
       });
-      if (!response.ok) throw new Error('Failed to update note');
-      
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+        throw new Error('Failed to update note');
+      }
+
       await fetchNotes();
     } catch (err) {
       console.error('Error editing note:', err);
@@ -77,13 +144,24 @@ async function editNote(i) {
 
 async function toggleDone(i) {
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/notes/${notes[i].id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ done: !notes[i].done })
     });
-    if (!response.ok) throw new Error('Failed to update note');
-    
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+      throw new Error('Failed to update note');
+    }
+
     await fetchNotes();
   } catch (err) {
     console.error('Error toggling done:', err);
@@ -93,13 +171,24 @@ async function toggleDone(i) {
 
 async function toggleMyDay(i) {
   try {
+    const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/notes/${notes[i].id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ inMyDay: !notes[i].inMyDay })
     });
-    if (!response.ok) throw new Error('Failed to update note');
-    
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        return;
+      }
+      throw new Error('Failed to update note');
+    }
+
     await fetchNotes();
   } catch (err) {
     console.error('Error toggling My Day:', err);
@@ -117,7 +206,7 @@ function getToday() {
 
 function daysLeft(date) {
   const today = new Date();
-  today.setHours(0,0,0,0);
+  today.setHours(0, 0, 0, 0);
   return Math.ceil((new Date(date) - today) / 86400000);
 }
 
@@ -180,7 +269,7 @@ function renderNotes() {
 
   if (filter === 'open') list = list.filter(n => !n.done);
   if (filter === 'done') list = list.filter(n => n.done);
-  if (['important','medium','low'].includes(filter))
+  if (['important', 'medium', 'low'].includes(filter))
     list = list.filter(n => n.priority === filter);
 
   list.forEach((note) => {
@@ -225,7 +314,7 @@ function renderCalendar() {
     div.className = 'day';
     div.textContent = d;
 
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     const dayNotes = notes.filter(n => n.date === dateStr);
 
     if (dayNotes.length) {
@@ -242,6 +331,12 @@ function toggleDark() {
   localStorage.setItem('darkMode', document.body.classList.contains('dark'));
 }
 
+function logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = 'index-login.html';
+}
+
 /* Elements */
 const textEl = document.getElementById('text');
 const dateEl = document.getElementById('date');
@@ -253,4 +348,4 @@ const filterEl = document.getElementById('filter');
 if (localStorage.getItem('darkMode') === 'true')
   document.body.classList.add('dark');
 
-fetchNotes();
+checkAuth();
