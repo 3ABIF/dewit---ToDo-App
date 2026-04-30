@@ -253,6 +253,46 @@
 
   <script>
     const AUTH_URL = 'http://localhost:3001/auth';
+    const LOCAL_USERS_KEY = 'dewitUsers';
+
+    function hashPassword(password) {
+      return btoa(password);
+    }
+
+    function getLocalUsers() {
+      return JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
+    }
+
+    function saveLocalUsers(users) {
+      localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
+    }
+
+    function localLogin(email, password) {
+      const users = getLocalUsers();
+      const user = users.find(u => u.email === email);
+      if (!user) {
+        return { success: false, error: 'Ungültige Anmeldedaten (offline)' };
+      }
+      if (user.passwordHash !== hashPassword(password)) {
+        return { success: false, error: 'Ungültige Anmeldedaten (offline)' };
+      }
+      return { success: true, user: { username: user.username, email: user.email } };
+    }
+
+    function localRegister(username, email, password) {
+      const users = getLocalUsers();
+      if (users.some(u => u.email === email || u.username === username)) {
+        return { success: false, error: 'Benutzer oder Email bereits vorhanden (offline)' };
+      }
+      const newUser = {
+        username,
+        email,
+        passwordHash: hashPassword(password)
+      };
+      users.push(newUser);
+      saveLocalUsers(users);
+      return { success: true, user: { username, email } };
+    }
 
     function toggleForm() {
       const loginForm = document.getElementById('loginForm');
@@ -304,10 +344,7 @@
         const data = await response.json();
 
         if (!response.ok) {
-          showError('login', data.error || 'Anmeldung fehlgeschlagen');
-          btn.disabled = false;
-          btn.textContent = 'Anmelden';
-          return;
+          throw new Error(data.error || 'Server login fehlgeschlagen');
         }
 
         // Store token and user info
@@ -317,10 +354,18 @@
         // Redirect to main app
         window.location.href = 'index.html';
       } catch (err) {
-        console.error('Login error:', err);
-        showError('login', 'Verbindungsfehler. Überprüfe, ob der Server läuft.');
-        btn.disabled = false;
-        btn.textContent = 'Anmelden';
+        console.warn('Server login failed, falling back to local auth', err);
+        const result = localLogin(email, password);
+        if (!result.success) {
+          showError('login', result.error || 'Anmeldung fehlgeschlagen');
+          btn.disabled = false;
+          btn.textContent = 'Anmelden';
+          return;
+        }
+
+        localStorage.setItem('token', `local-${Date.now()}`);
+        localStorage.setItem('user', JSON.stringify(result.user));
+        window.location.href = 'index.html';
       }
     }
 
@@ -379,10 +424,26 @@
           window.location.href = 'index.html';
         }, 1500);
       } catch (err) {
-        console.error('Register error:', err);
-        showError('register', 'Verbindungsfehler. Überprüfe, ob der Server läuft.');
-        btn.disabled = false;
-        btn.textContent = 'Registrieren';
+        console.warn('Server register failed, falling back to local auth', err);
+        const result = localRegister(username, email, password);
+        if (!result.success) {
+          showError('register', result.error || 'Registrierung fehlgeschlagen');
+          btn.disabled = false;
+          btn.textContent = 'Registrieren';
+          return;
+        }
+
+        showSuccess('Registrierung erfolgreich! Du wirst weitergeleitet...');
+        document.getElementById('registerUsername').value = '';
+        document.getElementById('registerEmail').value = '';
+        document.getElementById('registerPassword').value = '';
+        document.getElementById('registerPasswordConfirm').value = '';
+
+        setTimeout(() => {
+          localStorage.setItem('token', `local-${Date.now()}`);
+          localStorage.setItem('user', JSON.stringify(result.user));
+          window.location.href = 'index.html';
+        }, 1500);
       }
     }
 
@@ -396,10 +457,35 @@
       document.body.classList.add('dark');
     }
 
-    // Check if already logged in
-    const token = localStorage.getItem('token');
-    if (token) {
-      window.location.href = 'index.html';
+    function getPageUrl(page) {
+      return window.location.href.replace(/\/[^\/\?#]*([\?#].*)?$/, '/' + page);
+    }
+
+    function goToIndex() {
+      window.location.replace(getPageUrl('index.html'));
+    }
+
+    function isValidSession() {
+      const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+      if (!token || !user) return false;
+      try {
+        const parsed = JSON.parse(user);
+        return parsed && parsed.username;
+      } catch {
+        return false;
+      }
+    }
+
+    function clearSession() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
+
+    if (isValidSession()) {
+      goToIndex();
+    } else {
+      clearSession();
     }
   </script>
 </body>
