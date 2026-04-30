@@ -1,7 +1,46 @@
-let notes = JSON.parse(localStorage.getItem('dewitNotes')) || [];
+let notes = [];
+let currentUser = null;
+
+function clearSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+}
+
+function getPageUrl(page) {
+  return window.location.href.replace(/\/[^\/\?#]*([\?#].*)?$/, '/' + page);
+}
+
+function goToLogin() {
+  window.location.replace(getPageUrl('index-login.html'));
+}
+
+function goToIndex() {
+  window.location.replace(getPageUrl('index.html'));
+}
+
+function getNotesKey() {
+  return currentUser ? `dewitNotes_${currentUser.username}` : 'dewitNotes';
+}
 
 function saveNotes() {
-  localStorage.setItem('dewitNotes', JSON.stringify(notes));
+  localStorage.setItem(getNotesKey(), JSON.stringify(notes));
+}
+
+function loadNotes() {
+  const stored = localStorage.getItem(getNotesKey());
+  if (stored) {
+    notes = JSON.parse(stored);
+    return;
+  }
+
+  const legacy = localStorage.getItem('dewitNotes');
+  if (legacy) {
+    notes = JSON.parse(legacy);
+    saveNotes();
+    return;
+  }
+
+  notes = [];
 }
 
 function getToday() {
@@ -189,6 +228,45 @@ function toggleDark() {
   localStorage.setItem('darkMode', document.body.classList.contains('dark'));
 }
 
+function logout() {
+  clearSession();
+  currentUser = null;
+  notes = [];
+  goToLogin();
+}
+
+function checkAuth() {
+  const token = localStorage.getItem('token');
+  const user = localStorage.getItem('user');
+
+  if (!token || !user) {
+    clearSession();
+    window.location.href = 'index-login.html';
+    return false;
+  }
+
+  try {
+    currentUser = JSON.parse(user);
+  } catch (err) {
+    clearSession();
+    window.location.href = 'index-login.html';
+    return false;
+  }
+
+  if (!currentUser || !currentUser.username) {
+    clearSession();
+    window.location.href = 'index-login.html';
+    return false;
+  }
+
+  const userDisplay = document.getElementById('userDisplay');
+  if (userDisplay) {
+    userDisplay.textContent = `👤 ${currentUser.username}`;
+  }
+
+  return true;
+}
+
 /* Elements */
 const textEl = document.getElementById('text');
 const dateEl = document.getElementById('date');
@@ -196,16 +274,26 @@ const priorityEl = document.getElementById('priority');
 const searchEl = document.getElementById('search');
 const filterEl = document.getElementById('filter');
 
-/* Init */
-if (localStorage.getItem('darkMode') === 'true')
-  document.body.classList.add('dark');
+function initApp() {
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark');
+  }
 
-// Migration: Add inMyDay field to existing notes
-notes = notes.map(note => ({
-  ...note,
-  inMyDay: note.inMyDay || false
-}));
+  loadNotes();
 
-renderMyDay();
-renderNotes();
-renderCalendar();
+  // Migration: Add inMyDay field to existing notes
+  notes = notes.map(note => ({
+    ...note,
+    inMyDay: note.inMyDay || false
+  }));
+
+  renderMyDay();
+  renderNotes();
+  renderCalendar();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (checkAuth()) {
+    initApp();
+  }
+});

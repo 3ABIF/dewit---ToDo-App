@@ -69,9 +69,9 @@ Frontend (Nginx + Vanilla JS) ←→ Backend (Express.js) ←→ Datenbank (Post
 - Zweck: Verbindung zwischen Frontend und Backend-API
 
 #### `script.js`
-- Alternative JavaScript-Implementierung mit localStorage
-- Funktionen: addNote(), deleteNote(), editNote(), toggleDone(), toggleMyDay(), renderMyDay(), renderNotes(), renderCalendar()
-- Zweck: Lokale Version ohne Backend (veraltet, wird durch script-api.js ersetzt)
+- Offline JavaScript-Implementierung mit localStorage
+- Funktionen: Login-Check, Logout, per-Benutzer-Notizenspeicherung, addNote(), deleteNote(), editNote(), toggleDone(), toggleMyDay(), renderMyDay(), renderNotes(), renderCalendar()
+- Zweck: Lokaler Demo-Modus ohne Backend, jetzt Standard in `index.html`
 
 #### `nginx.conf`
 - Nginx-Konfigurationsdatei
@@ -184,6 +184,46 @@ docker-compose up
 - 🔍 Suche und Filter
 - 🌙 Dark Mode
 - 📱 Responsive Design
+
+
+### Benutzer-Authentifizierung - "Login/Signup Feature"
+
+#### Funktionsweise:
+Die Authentifizierung funktioniert vollständig client-seitig mit **localStorage** und bietet folgende Funktionen:
+
+**1. Signup (Registrierung):**
+- Benutzer können ein neues Konto mit Benutzername und Passwort erstellen
+- E-Mail wird als optionales Feld akzeptiert (zur Kontakt-Verifikation)
+- Alle Benutzer werden in `dewitUsers` im localStorage gespeichert
+- Passwörter werden gehashed (einfache Verschlüsselung für Client-Seite)
+
+**2. Login:**
+- Benutzer melden sich mit E-Mail und Passwort an
+- Die Anwendung validiert die Zugangsdaten gegen gespeicherte Benutzer
+- Eine aktive Sitzung wird erstellt (`user` und `token` im localStorage)
+- Die App bleibt nach dem Refresh angemeldet
+- `script.js` prüft beim Laden den Login-Status und leitet bei fehlender Anmeldung auf `index-login.html` weiter
+
+**3. Logout:**
+- Mit einem Klick auf den Logout-Button wird die Sitzung beendet
+- Die Sitzung wird gelöscht und der Benutzer wird zurück zur Login-Seite gebracht
+- Notizen bleiben erhalten und sind beim nächsten Login verfügbar
+
+**4. Datenverwaltung:**
+- Jeder Benutzer hat seine **eigenen Notizen** (getrennt nach Benutzername)
+- Notizen werden in `dewitNotes_[Benutzername]` gespeichert
+- Dark-Mode Einstellung ist global (für alle Benutzer gleich)
+
+#### UI-Elemente:
+- **Login Page**: `index-login.html` zeigt Login und Registrierung
+- **Toggle Login/Signup**: Benutzer können zwischen Login und Registrierung wechseln
+- **Error-Handling**: Fehlermeldungen bei leeren Feldern oder falschen Zugangsdaten
+- **Logout Button**: In der App-Kopfzeile (neben Dark-Mode Toggle) verfügbar
+
+#### Technische Implementierung:
+- Authentifizierung läuft lokal in `index-login.html` mit Fallback auf localStorage, wenn der Backend-Server nicht verfügbar ist
+- `script.js` lädt Notizen für den aktuell angemeldeten Benutzer und zeigt die App nur bei gültiger Sitzung
+- Offline-Demo-Modus: `index.html` verwendet `script.js` als Standard
 
 ### Kalender-Picker
 
