@@ -1,12 +1,13 @@
-# Project Definition Document - dewit ToDo App
+﻿# Project Definition Document - dewit ToDo App
 
 ## Einführung
 
-Das **dewit** Projekt ist eine moderne, responsive ToDo-Webanwendung, die entwickelt wurde, um Studierenden und Berufstätigen eine einfache Möglichkeit zu bieten, ihre täglichen Aufgaben und universitären Abgabetermine zu organisieren. Die App ermöglicht es, Prioritäten zu setzen und Fristen einzuhalten, ohne Stress.
+Das **dewit** Projekt ist eine moderne, responsive ToDo-Webanwendung für Studierende und Berufstätige. Ziel ist es, alltägliche Aufgaben, Deadlines und Tagespläne effizient zu verwalten – sowohl lokal als auch über eine Backend-API mit Benutzer-Authentifizierung.
 
 ### Ziele des Projekts
-- Bereitstellung eines Minimum Viable Product (MVP) bis Juni/Juli 2026
-- Features: Anlage von ToDos, Planung von Deadlines, Einstellen von Dringlichkeit (1-3), "Mein Tag"-Feature für Tagesplanung
+- Einsatzbereites MVP für Aufgaben- und Tagesplanung
+- Features: Aufgaben anlegen, Fristen setzen, Prioritäten wählen, "Mein Tag"-Ansicht
+- Flexible Nutzung: lokal mit `localStorage` und optional mit Backend-API
 
 ### Beteiligte Entwickler
 - Robin Steininger
@@ -14,130 +15,144 @@ Das **dewit** Projekt ist eine moderne, responsive ToDo-Webanwendung, die entwic
 
 ## Architekturübersicht
 
-Die Anwendung folgt einer klassischen Client-Server-Architektur mit drei Hauptkomponenten:
+Die Anwendung kann als hybride Architektur betrachtet werden:
 
-1. **Frontend**: Vanilla JavaScript-Anwendung, serviert über Nginx
-2. **Backend**: Express.js REST-API
-3. **Datenbank**: PostgreSQL
+1. **Frontend**: Vanilla JavaScript, HTML & CSS (Client-seitige App)
+2. **Backend**: Express.js REST-API mit JWT-Authentifizierung
+3. **Datenbank**: PostgreSQL für persistente Benutzerdaten und Notizen
 
 ```
-Frontend (Nginx + Vanilla JS) ←→ Backend (Express.js) ←→ Datenbank (PostgreSQL)
+Frontend (Browser) ←→ Backend (Express.js) ←→ PostgreSQL
+       ↑
+       └── localStorage-Fallback (Offline-Modus)
 ```
 
 ### Technologiestack
 - **Frontend**: HTML5, CSS3, Vanilla JavaScript
-- **Backend**: Node.js, Express.js, PostgreSQL (pg-Treiber)
+- **Backend**: Node.js, Express.js
 - **Datenbank**: PostgreSQL
+- **API-Sicherheit**: JWT-Token
 - **Deployment**: Docker, Docker Compose
-- **Styling**: Responsive Design mit CSS-Variablen für Dark Mode
+- **Styling**: Responsive Design, Dark Mode
 
 ## Dateien und ihre Aufgaben
 
 ### Root-Verzeichnis
 
 #### `README.md`
-- Kurze Beschreibung des Projekts und des Repositories
-- Zweck: Erste Orientierung für neue Entwickler
+- Projektübersicht und Einstiegshinweise
+- Zweck: Repositoriumsbeschreibung für Entwickler
 
 #### `SETUP.md`
-- Detaillierte Anleitung zur Architektur und zum Setup
-- Enthält Quick Start mit Docker, lokale Entwicklungsschritte, Features-Liste, Datenbankschema und API-Endpunkte
-- Zweck: Vollständige Setup-Dokumentation
+- Setup-Anleitung und Architekturhinweise
+- Zweck: Detailliertes Setup und Start-Prozeduren
 
 #### `Project Description - ToDo App - dewit!.md`
-- Projektvision und Ziele
-- Beschreibung der Features und Beteiligten
-- Zweck: Überblick über die Projektziele und Roadmap
+- Projektvision, Ziele und Roadmap
+- Zweck: Strategische Projektbeschreibung
 
 #### `Dewit_Backlog.mk`
-- Akzeptanzkriterien für Features (z.B. Hinzufügen von Aufgaben)
-- Zweck: Definition der Anforderungen und Qualitätskriterien
+- Akzeptanzkriterien und Aufgabenliste
+- Zweck: Definition von Anforderungen und Funktionen
 
 #### `index.html`
-- Haupt-HTML-Datei der Anwendung
-- Struktur: Header mit Titel und Dark Mode Toggle, "Mein Tag"-Sektion, Formular für neue Notizen, Such-/Filterleiste, Kalender, Notizen-Container
-- Zweck: Grundgerüst der Benutzeroberfläche
+- Haupt-UI der Anwendung
+- Enthält Header, "Mein Tag"-Bereich, Notizformular, Such- und Filterleiste, Kalender und Notizenbereich
+- Zweck: Benutzeroberfläche für die ToDo-App
+
+#### `index-login.html`
+- Login-/Registrierungsseite für Benutzer
+- Enthält lokale und Server-basierte Authentifizierung mit Online-/Offline-Fallback
+- Zweck: Einstiegspunkt für Benutzeranmeldung
 
 #### `style.css`
-- CSS-Stylesheet für das gesamte Styling
-- Features: Responsive Design, CSS-Variablen für Farben, Dark Mode, Prioritätsfarben (wichtig=rot, mittel=orange, egal=grün)
-- Zweck: Visuelle Gestaltung der Anwendung
-
-#### `script-api.js`
-- JavaScript-Datei für API-Kommunikation
-- Funktionen: fetchNotes(), addNote(), deleteNote(), editNote(), toggleDone(), toggleMyDay()
-- Zweck: Verbindung zwischen Frontend und Backend-API
+- Globales Design und responsive Stilregeln
+- Enthält Farben, Layout, Dark Mode, Button- und Notiz-Styles
+- Zweck: Visuelle Darstellung und responsive Darstellung
 
 #### `script.js`
-- Offline JavaScript-Implementierung mit localStorage
-- Funktionen: Login-Check, Logout, per-Benutzer-Notizenspeicherung, addNote(), deleteNote(), editNote(), toggleDone(), toggleMyDay(), renderMyDay(), renderNotes(), renderCalendar()
-- Zweck: Lokaler Demo-Modus ohne Backend, jetzt Standard in `index.html`
+- Lokale Anwendungslogik mit `localStorage`
+- Funktionen: Authentifizierungsprüfung, Notizerstellung, Bearbeitung, Löschen, Toggle Done, Mein Tag, Suche/Filter, Kalenderdarstellung
+- Zweck: Haupt-Clientlogik für lokale Nutzung
+
+#### `script-api.js`
+- API-Client für Backend-Kommunikation
+- Funktionen: Authentifizierter Abruf, Erstellen, Aktualisieren, Löschen von Notizen
+- Zweck: Alternative Frontend-Implementierung für Backend-gestützte Nutzung
 
 #### `nginx.conf`
-- Nginx-Konfigurationsdatei
-- Features: Serviert statische Dateien, Proxy für API-Anfragen an Backend
-- Zweck: Webserver-Konfiguration für Produktionsumgebung
+- Nginx-Webserverkonfiguration
+- Zweck: Bereitstellung statischer Ressourcen und API-Proxy in Produktionsumgebungen
 
 #### `Dockerfile`
-- Docker-Build-Datei für Frontend
-- Multi-Stage Build: Node.js für Build, Nginx für Serving
-- Zweck: Containerisierung des Frontends
+- Containerisierung des Frontends
+- Zweck: Erstellen eines Deploy-Images für die Webanwendung
 
 #### `docker-compose.yml`
-- Docker Compose-Datei für vollständige Anwendung
-- Services: postgres, backend, frontend
-- Zweck: Orchestrierung aller Komponenten für Entwicklung und Produktion
+- Orchestrierung der kompletten Anwendung
+- Services: frontend, backend, postgres
+- Zweck: Lokales und produktionsnahes Zusammenspiel aller Komponenten
 
 ### Backend-Verzeichnis (`backend/`)
 
 #### `README.md`
-- Spezifische Dokumentation für das Backend
-- Zweck: Backend-spezifische Informationen
+- Backend-spezifische Dokumentation
+- Zweck: Backend-Setup und Entwicklungsinformationen
 
 #### `package.json`
-- Node.js-Projektdefinition
-- Abhängigkeiten: express, pg (PostgreSQL-Treiber), cors, dotenv
-- Dev-Abhängigkeiten: nodemon
-- Scripts: start (Produktion), dev (Entwicklung)
-- Zweck: Definition der Backend-Abhängigkeiten und Scripts
+- Node-Paketdefinition mit Abhängigkeiten und Skripten
+- Abhängigkeiten: `express`, `pg`, `cors`, `dotenv`, `bcryptjs`, `jsonwebtoken`
+- Skripte: `start`, `dev`
+- Zweck: Verwaltung des Backend-Projekts
 
 #### `server.js`
-- Hauptserver-Datei mit Express.js
-- Features: CORS-Unterstützung, JSON-Middleware, REST-API-Endpunkte
+- Express.js-Server mit Auth- und Notiz-API
 - Endpunkte:
-  - GET /api/notes: Alle Notizen abrufen
-  - POST /api/notes: Neue Notiz erstellen
-  - PUT /api/notes/:id: Notiz aktualisieren
-  - DELETE /api/notes/:id: Notiz löschen
-- Zweck: Implementierung der REST-API
+  - `POST /auth/register` – Benutzerregistrierung
+  - `POST /auth/login` – Benutzeranmeldung
+  - `GET /auth/verify` – Token-Überprüfung
+  - `GET /api/notes` – Notizen des angemeldeten Benutzers
+  - `POST /api/notes` – Notiz erstellen
+  - `PUT /api/notes/:id` – Notiz aktualisieren
+  - `DELETE /api/notes/:id` – Notiz löschen
+- Zweck: Backend-API für persistente und gesicherte Datenverwaltung
+
+#### `auth.js`
+- Authentifizierungsmodul mit JWT und Passwort-Hashing
+- Funktionen: `verifyToken`, `generateToken`, `hashPassword`, `comparePassword`
+- Zweck: Sicherheit und Nutzerauthentifizierung
 
 #### `db.js`
-- Datenbankverbindungsmodul
-- Verwendet pg-Pool für PostgreSQL-Verbindung
+- PostgreSQL-Verbindung mit `pg.Pool`
 - Konfiguration über Umgebungsvariablen
 - Zweck: Zentralisierte Datenbankverbindung
 
 #### `schema.sql`
-- SQL-Schema für die Datenbank
-- Tabelle `notes` mit Feldern: id, text, date, priority, done, in_my_day, created_at, updated_at
-- Indizes für date und priority
-- Zweck: Definition der Datenbankstruktur
+- Datenbankschema für Benutzer und Notizen
+- Zweck: Persistente Tabellenstruktur
 
 #### `Dockerfile`
-- Docker-Build-Datei für Backend
-- Node.js Alpine Image, Installation von Abhängigkeiten, Start des Servers
-- Zweck: Containerisierung des Backends
+- Backend-Container-Build für Node.js
+- Zweck: Deployment des Backend-Services
 
 #### `docker-compose.yml`
-- Docker Compose für Backend-only Setup
-- Services: postgres, backend
-- Zweck: Unabhängiges Backend-Testing
+- Backend/Datenbank-Konfiguration für lokale Entwicklung
+- Zweck: Backend-Testumgebung ohne Frontend
 
 ## Datenbankschema
 
 ```sql
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE notes (
   id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   text VARCHAR(500) NOT NULL,
   date DATE NOT NULL,
   priority VARCHAR(20) NOT NULL CHECK (priority IN ('important', 'medium', 'low')),
@@ -152,10 +167,42 @@ CREATE TABLE notes (
 
 | Methode | Endpunkt | Beschreibung |
 |---------|----------|-------------|
-| GET | `/api/notes` | Alle Notizen abrufen |
+| POST | `/auth/register` | Benutzerregistrierung |
+| POST | `/auth/login` | Benutzeranmeldung |
+| GET | `/auth/verify` | JWT-Token validieren |
+| GET | `/api/notes` | Notizen des aktuellen Benutzers abrufen |
 | POST | `/api/notes` | Neue Notiz erstellen |
 | PUT | `/api/notes/:id` | Notiz aktualisieren |
 | DELETE | `/api/notes/:id` | Notiz löschen |
+
+## Authentifizierung und Benutzerfluss
+
+### Online-Modus
+- Benutzer melden sich an oder registrieren sich über `index-login.html`
+- Der Server prüft Anmeldedaten und gibt einen JWT-Token zurück
+- Token wird in `localStorage` gespeichert
+- `script-api.js` nutzt den Token für geschützte API-Aufrufe
+
+### Offline-Fallback
+- Wenn der Backend-Server nicht erreichbar ist, fällt die App auf lokale Authentifizierung zurück
+- Benutzerkonten und Passworthashes werden in `localStorage` gespeichert (`dewitUsers`)
+- Notizen werden lokal in `dewitNotes_[Benutzername]` gespeichert
+
+### Session und Logout
+- Nach erfolgreichem Login ist die Sitzung aktiv bis zum Logout
+- Logout entfernt `token` und `user` aus `localStorage`
+- Danach wird der Benutzer zurück zur Login-Seite geleitet
+
+## Frontend-Funktionalität
+
+- Benutzer-spezifische Notizen mit lokalem und optionalem API-Speicher
+- Notiz hinzufügen, bearbeiten, löschen
+- Erledigte Aufgaben markieren
+- Prioritäten: wichtig, mittel, egal
+- Today-View: Aufgaben des aktuellen Tages anzeigen
+- Such- und Filterfunktionen
+- Tages-Kalenderübersicht mit Markierung von Notiztagen
+- Dark Mode und responsive Darstellung
 
 ## Setup und Ausführung
 
@@ -165,85 +212,26 @@ docker-compose up
 ```
 - Frontend: http://localhost
 - Backend: http://localhost:3001
-- Datenbank: Port 5432
+- PostgreSQL: Port 5432
 
 ### Lokale Entwicklung
-1. Backend: `cd backend && npm install && npm run dev`
-2. Frontend: Öffne `index.html` im Browser oder verwende Live Server
+1. `cd backend`
+2. `npm install`
+3. `npm run dev`
+4. Öffne `index-login.html` oder `index.html` im Browser
 
-### Deployment
-- Verwende Docker Compose für Produktion
-- Für Portainer: Repository pushen und als Stack deployen
+### Hinweise
+- Die Backend-API nutzt Umgebungsvariablen für Datenbankzugang und JWT-Secret
+- Lokaler Fallback bietet Offline-Zugriff ohne serverseitige Authentifizierung
 
-## Funktionalitäten
+## Aktuelle Projektfunktionen
 
-- ✅ ToDos erstellen, lesen, aktualisieren, löschen
-- 📅 Datumsbasierte Organisation
-- 🎯 Prioritätsstufen (wichtig, mittel, egal)
-- ⭐ "Mein Tag"-Sektion für heutige Aufgaben
-- 🔍 Suche und Filter
-- 🌙 Dark Mode
-- 📱 Responsive Design
-
-
-### Benutzer-Authentifizierung - "Login/Signup Feature"
-
-#### Funktionsweise:
-Die Authentifizierung funktioniert vollständig client-seitig mit **localStorage** und bietet folgende Funktionen:
-
-**1. Signup (Registrierung):**
-- Benutzer können ein neues Konto mit Benutzername und Passwort erstellen
-- E-Mail wird als optionales Feld akzeptiert (zur Kontakt-Verifikation)
-- Alle Benutzer werden in `dewitUsers` im localStorage gespeichert
-- Passwörter werden gehashed (einfache Verschlüsselung für Client-Seite)
-
-**2. Login:**
-- Benutzer melden sich mit E-Mail und Passwort an
-- Die Anwendung validiert die Zugangsdaten gegen gespeicherte Benutzer
-- Eine aktive Sitzung wird erstellt (`user` und `token` im localStorage)
-- Die App bleibt nach dem Refresh angemeldet
-- `script.js` prüft beim Laden den Login-Status und leitet bei fehlender Anmeldung auf `index-login.html` weiter
-
-**3. Logout:**
-- Mit einem Klick auf den Logout-Button wird die Sitzung beendet
-- Die Sitzung wird gelöscht und der Benutzer wird zurück zur Login-Seite gebracht
-- Notizen bleiben erhalten und sind beim nächsten Login verfügbar
-
-**4. Datenverwaltung:**
-- Jeder Benutzer hat seine **eigenen Notizen** (getrennt nach Benutzername)
-- Notizen werden in `dewitNotes_[Benutzername]` gespeichert
-- Dark-Mode Einstellung ist global (für alle Benutzer gleich)
-
-#### UI-Elemente:
-- **Login Page**: `index-login.html` zeigt Login und Registrierung
-- **Toggle Login/Signup**: Benutzer können zwischen Login und Registrierung wechseln
-- **Error-Handling**: Fehlermeldungen bei leeren Feldern oder falschen Zugangsdaten
-- **Logout Button**: In der App-Kopfzeile (neben Dark-Mode Toggle) verfügbar
-
-#### Technische Implementierung:
-- Authentifizierung läuft lokal in `index-login.html` mit Fallback auf localStorage, wenn der Backend-Server nicht verfügbar ist
-- `script.js` lädt Notizen für den aktuell angemeldeten Benutzer und zeigt die App nur bei gültiger Sitzung
-- Offline-Demo-Modus: `index.html` verwendet `script.js` als Standard
-
-### Kalender-Picker
-
-Die Anwendung enthält zwei Kalender-Komponenten für die Datumsverwaltung:
-
-1. **Datumseingabe für neue Notizen**:
-   - Verwendet das native HTML5 `<input type="date">`-Element
-   - Ermöglicht die Auswahl eines Datums beim Erstellen einer neuen Notiz
-   - Das ausgewählte Datum wird im ISO-Format (YYYY-MM-DD) gespeichert
-   - Technisch: Browser-native Datums-Picker, keine externe Bibliothek erforderlich
-
-2. **Kalender-Übersicht am unteren Rand**:
-   - Zeigt eine Monatsansicht mit allen Tagen des aktuellen Monats
-   - Tage mit Notizen werden mit farbigen Punkten markiert (rot für wichtig, orange für mittel, grün für egal)
-   - Implementiert in `script.js` mit der Funktion `renderCalendar()`
-   - Grid-Layout mit 7 Spalten für die Wochentage
-   - Responsive Design: Anpassung an verschiedene Bildschirmgrößen
-   - Dark Mode: Die Tagesfelder bleiben hell, nur die Zahlen werden dunkel für bessere Lesbarkeit
-
-Die Kalender-Funktionalität basiert vollständig auf Vanilla JavaScript und CSS, ohne externe Plugins oder Bibliotheken.
-
-Dieses Dokument soll es ermöglichen, den Code des dewit-Projekts vollständig zu verstehen und weiterzuentwickeln.</content>
-<parameter name="filePath">c:\Users\JohannesPernsteiner\Documents\GitHub\dewit---ToDo-App\Project_Definition_Document.md
+- ✅ Aufgaben anlegen, lesen, bearbeiten, löschen
+- ✅ Tagesansicht "Mein Tag"
+- ✅ Prioritätsfilter und Statusfilter
+- ✅ Benutzeranmeldung / Registrierung
+- ✅ JWT-basierte API-Authentifizierung
+- ✅ Offline-Fallback mit localStorage
+- ✅ Kalenderansicht zur Monatsübersicht
+- ✅ Dark Mode
+- ✅ Responsives Layout
