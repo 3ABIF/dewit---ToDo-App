@@ -252,47 +252,7 @@
   </div>
 
   <script>
-    const AUTH_URL = 'http://localhost:3001/auth';
-    const LOCAL_USERS_KEY = 'dewitUsers';
-
-    function hashPassword(password) {
-      return btoa(password);
-    }
-
-    function getLocalUsers() {
-      return JSON.parse(localStorage.getItem(LOCAL_USERS_KEY) || '[]');
-    }
-
-    function saveLocalUsers(users) {
-      localStorage.setItem(LOCAL_USERS_KEY, JSON.stringify(users));
-    }
-
-    function localLogin(email, password) {
-      const users = getLocalUsers();
-      const user = users.find(u => u.email === email);
-      if (!user) {
-        return { success: false, error: 'Ungültige Anmeldedaten (offline)' };
-      }
-      if (user.passwordHash !== hashPassword(password)) {
-        return { success: false, error: 'Ungültige Anmeldedaten (offline)' };
-      }
-      return { success: true, user: { username: user.username, email: user.email } };
-    }
-
-    function localRegister(username, email, password) {
-      const users = getLocalUsers();
-      if (users.some(u => u.email === email || u.username === username)) {
-        return { success: false, error: 'Benutzer oder Email bereits vorhanden (offline)' };
-      }
-      const newUser = {
-        username,
-        email,
-        passwordHash: hashPassword(password)
-      };
-      users.push(newUser);
-      saveLocalUsers(users);
-      return { success: true, user: { username, email } };
-    }
+const AUTH_URL = '/auth';
 
     function toggleForm() {
       const loginForm = document.getElementById('loginForm');
@@ -347,25 +307,13 @@
           throw new Error(data.error || 'Server login fehlgeschlagen');
         }
 
-        // Store token and user info
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-
-        // Redirect to main app
         window.location.href = 'index.html';
       } catch (err) {
-        console.warn('Server login failed, falling back to local auth', err);
-        const result = localLogin(email, password);
-        if (!result.success) {
-          showError('login', result.error || 'Anmeldung fehlgeschlagen');
-          btn.disabled = false;
-          btn.textContent = 'Anmelden';
-          return;
-        }
-
-        localStorage.setItem('token', `local-${Date.now()}`);
-        localStorage.setItem('user', JSON.stringify(result.user));
-        window.location.href = 'index.html';
+        showError('login', err.message || 'Anmeldung fehlgeschlagen. Prüfe Backend-Verbindung.');
+        btn.disabled = false;
+        btn.textContent = 'Anmelden';
       }
     }
 
@@ -417,33 +365,15 @@
         document.getElementById('registerPassword').value = '';
         document.getElementById('registerPasswordConfirm').value = '';
 
-        // Auto-login after successful registration
         setTimeout(() => {
           localStorage.setItem('token', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
           window.location.href = 'index.html';
         }, 1500);
       } catch (err) {
-        console.warn('Server register failed, falling back to local auth', err);
-        const result = localRegister(username, email, password);
-        if (!result.success) {
-          showError('register', result.error || 'Registrierung fehlgeschlagen');
-          btn.disabled = false;
-          btn.textContent = 'Registrieren';
-          return;
-        }
-
-        showSuccess('Registrierung erfolgreich! Du wirst weitergeleitet...');
-        document.getElementById('registerUsername').value = '';
-        document.getElementById('registerEmail').value = '';
-        document.getElementById('registerPassword').value = '';
-        document.getElementById('registerPasswordConfirm').value = '';
-
-        setTimeout(() => {
-          localStorage.setItem('token', `local-${Date.now()}`);
-          localStorage.setItem('user', JSON.stringify(result.user));
-          window.location.href = 'index.html';
-        }, 1500);
+        showError('register', 'Registrierung fehlgeschlagen. Prüfe Backend-Verbindung.');
+        btn.disabled = false;
+        btn.textContent = 'Registrieren';
       }
     }
 

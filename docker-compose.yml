@@ -30,6 +30,7 @@ services:
       DB_NAME: dewit
       DB_PASSWORD: postgres
       DB_PORT: 5432
+      JWT_SECRET: dewit-dev-secret-change-in-production
     ports:
       - "3001:3001"
     depends_on:

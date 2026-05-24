@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:3001/api';
-const AUTH_URL = 'http://localhost:3001/auth';
+const API_URL = '/api';
+const AUTH_URL = '/auth';
 
 let notes = [];
 let currentUser = null;
