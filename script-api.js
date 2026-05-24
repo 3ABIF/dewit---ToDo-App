@@ -4,6 +4,20 @@ const AUTH_URL = '/auth';
 let notes = [];
 let currentUser = null;
 
+// Toast notification system
+function showToast(message, type = 'error', duration = 3000) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.animation = 'slideOut 0.3s ease-out forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
 // Check if user is logged in on page load
 function checkAuth() {
   const token = localStorage.getItem('token');
@@ -48,7 +62,7 @@ async function fetchNotes() {
     renderCalendar();
   } catch (err) {
     console.error('Error fetching notes:', err);
-    alert('Failed to load notes');
+    showToast('Fehler beim Laden der Notizen', 'error');
   }
 }
 
@@ -57,7 +71,10 @@ async function addNote() {
   const date = dateEl.value;
   const priority = priorityEl.value;
 
-  if (!text || !date) return alert('Bitte Text und Datum eingeben');
+  if (!text || !date) {
+    showToast('Bitte Text und Datum eingeben', 'warning');
+    return;
+  }
 
   try {
     const token = localStorage.getItem('token');
@@ -81,9 +98,10 @@ async function addNote() {
     await fetchNotes();
     textEl.value = '';
     dateEl.value = '';
+    showToast('Notiz gespeichert', 'success');
   } catch (err) {
     console.error('Error adding note:', err);
-    alert('Failed to create note');
+    showToast('Fehler beim Erstellen der Notiz', 'error');
   }
 }
 
@@ -106,39 +124,76 @@ async function deleteNote(i) {
     }
 
     await fetchNotes();
+    showToast('Notiz gelöscht', 'success');
   } catch (err) {
     console.error('Error deleting note:', err);
-    alert('Failed to delete note');
+    showToast('Fehler beim Löschen der Notiz', 'error');
   }
 }
 
-async function editNote(i) {
-  const t = prompt('Notiz bearbeiten', notes[i].text);
-  if (t !== null) {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/notes/${notes[i].id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ text: t })
-      });
+function startInlineEdit(i) {
+  const note = notes[i];
+  const container = document.getElementById('notes');
+  const noteElements = container.querySelectorAll('.note');
+  const noteEl = noteElements[i];
+  if (!noteEl) return;
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          logout();
-          return;
-        }
-        throw new Error('Failed to update note');
+  const originalIndex = notes.findIndex(n => n === note);
+  const days = daysLeft(note.date);
+  const today = getToday();
+  const isToday = note.date === today;
+
+  noteEl.innerHTML = `
+    <textarea class="note-text-edit">${note.text}</textarea>
+    <div class="edit-actions">
+      <button onclick="saveInlineEdit(${originalIndex})">Speichern</button>
+      <button class="secondary" onclick="renderNotes()">Abbrechen</button>
+    </div>
+    <div class="meta">📅 ${note.date} · ${days >= 0 ? days + ' Tage übrig' : 'Abgelaufen'}</div>
+  `;
+
+  const textarea = noteEl.querySelector('.note-text-edit');
+  textarea.focus();
+  textarea.select();
+}
+
+async function saveInlineEdit(i) {
+  const container = document.getElementById('notes');
+  const noteElements = container.querySelectorAll('.note');
+  const noteEl = noteElements[i];
+  if (!noteEl) return;
+
+  const textarea = noteEl.querySelector('.note-text-edit');
+  const newText = textarea.value.trim();
+  if (!newText) {
+    showToast('Notiz darf nicht leer sein', 'warning');
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/notes/${notes[i].id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ text: newText })
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        logout();
+        return;
       }
-
-      await fetchNotes();
-    } catch (err) {
-      console.error('Error editing note:', err);
-      alert('Failed to edit note');
+      throw new Error('Failed to update note');
     }
+
+    await fetchNotes();
+    showToast('Notiz aktualisiert', 'success');
+  } catch (err) {
+    console.error('Error editing note:', err);
+    showToast('Fehler beim Aktualisieren der Notiz', 'error');
   }
 }
 
@@ -163,9 +218,10 @@ async function toggleDone(i) {
     }
 
     await fetchNotes();
+    showToast(notes[i].done ? 'Notiz als offen markiert' : 'Notiz als erledigt markiert', 'success');
   } catch (err) {
     console.error('Error toggling done:', err);
-    alert('Failed to update note');
+    showToast('Fehler beim Aktualisieren der Notiz', 'error');
   }
 }
 
@@ -190,9 +246,10 @@ async function toggleMyDay(i) {
     }
 
     await fetchNotes();
+    showToast(notes[i].inMyDay ? 'Aus "Mein Tag" entfernt' : 'Zu "Mein Tag" hinzugefügt', 'success');
   } catch (err) {
     console.error('Error toggling My Day:', err);
-    alert('Failed to update note');
+    showToast('Fehler beim Aktualisieren der Notiz', 'error');
   }
 }
 
@@ -285,7 +342,7 @@ function renderNotes() {
       <p class="${note.done ? 'done' : ''}">${note.text}</p>
       <div class="meta">📅 ${note.date} · ${days >= 0 ? days + ' Tage übrig' : 'Abgelaufen'}</div>
       <button onclick="toggleDone(${originalIndex})">✔️</button>
-      <button class="secondary" onclick="editNote(${originalIndex})">✏️</button>
+      <button class="secondary" onclick="startInlineEdit(${originalIndex})">✏️</button>
       <button class="secondary" onclick="deleteNote(${originalIndex})">🗑️</button>
       ${isToday ? `<button class="secondary my-day-toggle" onclick="toggleMyDay(${originalIndex})">⭐ ${note.inMyDay ? 'Entfernt' : 'Zu Mein Tag'}</button>` : ''}
     `;

@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build output
+bin/
+obj/
+
+# Environment files
+.env
+
+# macOS metadata
+.DS_Store
+__MACOSX/
+
+# IDE
+.vscode/
+
+# Docker volumes
+postgres_data/
+
+# Archives
+*.zip
